@@ -1,4 +1,10 @@
-import { addDays, endOfDay, isWithinInterval, startOfDay } from "date-fns";
+import {
+  addDays,
+  endOfDay,
+  isPast,
+  isWithinInterval,
+  startOfDay,
+} from "date-fns";
 import express from "express";
 import { RRule } from "rrule";
 import { prismaClient } from "./database/prismaClient";
@@ -97,7 +103,7 @@ app.get("/", async (req, res) => {
   );
 
   // best case scenario done.
-  if (isBetweenTodayAndSevenDaysAhead) {
+  if (isPast(testDate) || isBetweenTodayAndSevenDaysAhead) {
     console.log("fetching from database");
     const response = await prismaClient.routine.findMany({
       where: {

@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Routine {
+  id                String              @id @unique @default(cuid())
+  title             String
+  isDeleted         Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  routineFrequency  RoutineFrequency?
+  routineRecurrence RoutineRecurrence[]
+
+  @@map("routine")
+}
+
+model RoutineFrequency {
+  id        String    @id @unique @default(cuid())
+  frequency String?
+  interval  Int?
+  byweekday String?
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  routineId String    @unique
+  routine   Routine   @relation(fields: [routineId], references: [id])
+
+  @@map("routine_frequency")
+}
+
+model RoutineRecurrence {
+  id            String   @id @unique @default(cuid())
+  status        String
+  startDateTime DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  Routine       Routine? @relation(fields: [routineId], references: [id])
+  routineId     String?
+
+  @@map("routine_recurrence")
+}
